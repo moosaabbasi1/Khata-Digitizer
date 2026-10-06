@@ -1,0 +1,282 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Verify Chit — Khata Digitizer{% endblock %}
+
+{% block content %}
+<div class="khata-breadcrumb">
+    <a href="{% url 'dashboard' %}">Dashboard</a>
+    <span class="separator">/</span>
+    <a href="{% url 'chit_upload' %}">Scan Chit</a>
+    <span class="separator">/</span>
+    <span>Verify Scanned Items</span>
+</div>
+
+<!-- Header -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.03em;">
+            Verify Scanned Line Items
+        </h1>
+        <p class="font-editorial text-muted small mb-0" style="font-size: 0.95rem;">
+            Review the OCR-extracted line items against your physical chit photo. Correct names, quantities, or rates before confirming into your ledger.
+        </p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'chit_upload' %}" class="btn btn-sm btn-khata-secondary">
+            Cancel &amp; Re-upload
+        </a>
+    </div>
+</div>
+
+<!-- Stepper Indicator -->
+<div class="d-flex align-items-center justify-content-between mb-4 px-2 max-w-md">
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--mint-text); font-size: 0.75rem;">✓</span>
+        <span class="small fw-semibold text-muted">Upload</span>
+    </div>
+    <div class="flex-grow-1 mx-2" style="height: 1px; background-color: var(--border-default);"></div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--mint-text); font-size: 0.75rem;">✓</span>
+        <span class="small fw-semibold text-muted">OCR Scan</span>
+    </div>
+    <div class="flex-grow-1 mx-2" style="height: 1px; background-color: var(--border-default);"></div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--dark-base); font-size: 0.75rem;">3</span>
+        <span class="small fw-bold text-dark">Confirm</span>
+    </div>
+</div>
+
+<!-- Chit Party Details Banner -->
+<div class="khata-card p-3 mb-4 d-flex flex-wrap align-items-center justify-content-between gap-2">
+    <div class="d-flex align-items-center gap-2">
+        {% if chit.chit_type == 'seller' %}
+            <span class="khata-badge khata-badge-blue">🏢 Supplier Purchase</span>
+        {% else %}
+            <span class="khata-badge khata-badge-slate">👤 Customer Sale</span>
+        {% endif %}
+        <div>
+            <span class="text-muted small">{{ chit.party_type_label }}:</span>
+            <strong class="text-dark">{{ chit.party_name }}</strong>
+            {% if chit.party_phone %}
+                <span class="text-muted small ms-1">({{ chit.party_phone }})</span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="text-muted small font-editorial">
+        Scanned at <strong class="text-dark">{{ chit.upload_date|date:"d M Y, H:i" }}</strong>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Left Column: Chit Photo (Sticky on desktop) -->
+    <div class="col-lg-4 order-lg-2">
+        <div class="khata-card float-elevated mb-3 position-sticky" style="top: 80px;">
+            <div class="khata-card-header">
+                <span class="fw-semibold small text-dark">Receipt Reference</span>
+                {% if chit.image %}
+                    <a href="{{ chit.image.url }}" target="_blank" class="small fw-semibold text-decoration-none" style="color: var(--terracotta);">
+                        Inspect Full Size &rarr;
+                    </a>
+                {% endif %}
+            </div>
+            <div class="khata-card-body p-2 text-center">
+                {% if chit.image %}
+                    <div class="workbench-chit-frame">
+                        <img src="{{ chit.image.url }}" alt="Uploaded chit" width="800" height="600" loading="lazy" decoding="async" class="workbench-chit-img rounded" style="aspect-ratio: 4/3;">
+                    </div>
+                    <div class="text-muted small mt-2 font-editorial">
+                        Reference line numbers and quantities against the physical receipt
+                    </div>
+                {% else %}
+                    <div class="p-4 text-muted small font-editorial">No photo available</div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if unparsed_lines %}
+        <div class="alert border-0 shadow-xs mb-3" style="background-color: var(--terracotta-bg); color: var(--terracotta-text); border-left: 3px solid var(--terracotta) !important;">
+            <div class="d-flex align-items-start gap-2">
+                <span style="font-size: 1.1rem;">⚠️</span>
+                <div>
+                    <strong class="d-block small mb-1">Unparsed Handwritten Lines</strong>
+                    <div class="small mb-2 font-editorial">These handwritten lines could not be automatically formatted. Copy into empty rows below if needed:</div>
+                    <ul class="mb-0 ps-3 small font-monospace">
+                        {% for line in unparsed_lines %}
+                            <li>{{ line }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if raw_text %}
+        <details class="khata-card p-3 mb-3">
+            <summary class="small text-muted fw-semibold cursor-pointer font-editorial">
+                View Raw OCR Extracted Output
+            </summary>
+            <pre class="p-2 mt-2 rounded small font-monospace mb-0" style="background-color: var(--bg-page); white-space: pre-wrap; font-size: 0.75rem;">{{ raw_text }}</pre>
+        </details>
+        {% endif %}
+    </div>
+
+    <!-- Right Column: Verification Formset Table -->
+    <div class="col-lg-8 order-lg-1">
+        <div class="p-3 rounded mb-3 d-flex align-items-center gap-2" style="background-color: var(--bg-subtle); border: 1px solid var(--border-default); color: var(--text-secondary);">
+            <span>ℹ️</span>
+            <div class="small font-editorial">Check items and rates. Check <strong>Credit?</strong> for any item that remains unpaid (Udhar).</div>
+        </div>
+
+        <form method="post" action="{% url 'chit_review' chit.id %}">
+            {% csrf_token %}
+            {{ formset.management_form }}
+
+            <div class="khata-card float-elevated mb-4">
+                <div class="khata-card-header">
+                    <h5 class="mb-0 fw-bold fs-6 text-dark" style="letter-spacing: -0.01em;">Scanned Products &amp; Prices</h5>
+                    <span class="text-muted small font-monospace">Itemized Spreadsheet</span>
+                </div>
+                <div class="khata-card-body p-0">
+                    <div class="table-responsive">
+                        <table class="khata-table align-middle">
+                            <thead>
+                                <tr>
+                                    <th style="min-width: 170px;">Product Name</th>
+                                    <th style="min-width: 90px; width: 100px;">Qty</th>
+                                    <th style="min-width: 110px; width: 120px;">Unit Price (Rs)</th>
+                                    <th style="min-width: 110px; width: 120px;">Cost (Rs)</th>
+                                    <th class="text-center" style="width: 80px;">Credit?</th>
+                                    <th class="text-center" style="width: 70px;">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item_form in formset %}
+                                <tr>
+                                    <td>
+                                        {{ item_form.id }}
+                                        {{ item_form.item_name }}
+                                        {% for error in item_form.item_name.errors %}
+                                            <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ item_form.quantity }}
+                                        {% for error in item_form.quantity.errors %}
+                                            <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ item_form.price }}
+                                        {% for error in item_form.price.errors %}
+                                            <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {{ item_form.cost_price }}
+                                        {% for error in item_form.cost_price.errors %}
+                                            <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                                        {% endfor %}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="form-check d-flex justify-content-center m-0">
+                                            {{ item_form.is_credit }}
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        {% if item_form.DELETE %}
+                                            <div class="form-check d-flex justify-content-center m-0">
+                                                {{ item_form.DELETE }}
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Live Ledger Total Sticky Footer -->
+                <div class="workbench-sticky-summary d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div>
+                            <div class="text-muted small">Items</div>
+                            <strong id="liveItemCount" class="fs-6 text-dark font-monospace">0</strong>
+                        </div>
+                        <div class="border-start ps-3" style="border-color: var(--border-default) !important;">
+                            <div class="text-muted small">Udhar Items</div>
+                            <strong id="liveCreditCount" class="fs-6 font-monospace" style="color: var(--terracotta);">0</strong>
+                        </div>
+                        <div class="border-start ps-3" style="border-color: var(--border-default) !important;">
+                            <div class="text-muted small">Estimated Total</div>
+                            <strong class="fs-5 text-dark font-monospace">Rs <span id="liveTotalAmount">0.00</span></strong>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="submit" class="btn btn-khata-terracotta px-4 py-2">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Confirm &amp; Save to Ledger
+                        </button>
+                        <a href="{% url 'dashboard' %}" class="btn btn-khata-secondary px-3 py-2">
+                            Discard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function recalculateChitTotals() {
+        const rows = document.querySelectorAll('table.khata-table tbody tr');
+        let total = 0;
+        let count = 0;
+        let creditCount = 0;
+
+        rows.forEach(row => {
+            const deleteCheckbox = row.querySelector('input[type="checkbox"][name$="-DELETE"]');
+            if (deleteCheckbox && deleteCheckbox.checked) {
+                return;
+            }
+
+            const nameInput = row.querySelector('input[name$="-item_name"]');
+            const qtyInput = row.querySelector('input[name$="-quantity"]');
+            const priceInput = row.querySelector('input[name$="-price"]');
+            const creditCheckbox = row.querySelector('input[type="checkbox"][name$="-is_credit"]');
+
+            if (nameInput && nameInput.value.trim() !== '') {
+                count++;
+                const qty = parseFloat(qtyInput ? qtyInput.value : 0) || 1;
+                const price = parseFloat(priceInput ? priceInput.value : 0) || 0;
+                total += (qty * price);
+
+                if (creditCheckbox && creditCheckbox.checked) {
+                    creditCount++;
+                }
+            }
+        });
+
+        const liveTotalEl = document.getElementById('liveTotalAmount');
+        const liveCountEl = document.getElementById('liveItemCount');
+        const liveCreditEl = document.getElementById('liveCreditCount');
+
+        if (liveTotalEl) liveTotalEl.textContent = total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        if (liveCountEl) liveCountEl.textContent = count;
+        if (liveCreditEl) liveCreditEl.textContent = creditCount;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        recalculateChitTotals();
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('input', recalculateChitTotals);
+            form.addEventListener('change', recalculateChitTotals);
+        }
+    });
+</script>
+{% endblock %}

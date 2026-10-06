@@ -1,0 +1,197 @@
+# ==========================================
+# Environment Variables & Secrets
+# ==========================================
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+**/*.env
+!.env.example
+!.env.template
+!**/.env.example
+!**/.env.template
+
+
+# ==========================================
+# Python Artifacts & Bytecode
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.dylib
+*.dll
+
+# Distribution / packaging
+dist/
+build/
+develop-eggs/
+eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# ==========================================
+# Virtual Environments
+# ==========================================
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+.pipenv/
+pip-wheel-metadata/
+
+# ==========================================
+# Django & Databases
+# ==========================================
+# Database files & SQL Server dumps
+*.sqlite3
+*.sqlite3-journal
+*.db
+*.bak
+*.mdf
+*.ldf
+*.ndf
+*.sql
+
+# Media uploads (user uploaded chits / temporary files)
+media/
+**/media/
+!khata_digitizer/sample_data/
+
+# Collected static files
+staticfiles/
+**/staticfiles/
+
+# Local settings / overrides
+local_settings.py
+**/local_settings.py
+
+# Logs & PID files
+*.log
+logs/
+*.pid
+
+# ==========================================
+# Machine Learning, OCR & AI Artifacts
+# ==========================================
+# Model weights & exported binaries
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.bin
+*.h5
+*.tflite
+*.joblib
+*.pkl
+
+# Training runs & experiment tracking
+runs/
+checkpoints/
+wandb/
+.neptune/
+mlruns/
+lightning_logs/
+
+# Large raw datasets & archives
+dataset/
+datasets/
+data/raw/
+data/processed/
+*.zip
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Temp OCR debug outputs
+debug_images/
+tmp_ocr/
+*_debug.png
+*_processed.jpg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+
+# ==========================================
+# Testing, Coverage & Linters
+# ==========================================
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+nosetests.xml
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+.cache/
+
+# ==========================================
+# Background Workers (Celery / Redis)
+# ==========================================
+celerybeat-schedule
+celerybeat-schedule.db
+celerybeat.pid
+dump.rdb
+
+# ==========================================
+# Containerization & DevOps
+# ==========================================
+docker-compose.override.yml
+.docker/
+
+# ==========================================
+# IDEs & Code Editors
+# ==========================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ==========================================
+# Operating System Files
+# ==========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# ==========================================
+# AI Assistant / Scratch Dirs & Skills
+# ==========================================
+.antigravity/
+.gemini/
+frontend-design/
+**/frontend-design/
+skill-creator/
+**/skill-creator/
+.archify/
+**/.archify/
+
+

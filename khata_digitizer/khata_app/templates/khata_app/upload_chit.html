@@ -1,0 +1,285 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Scan Chit — Khata Digitizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-md-9 col-lg-7">
+        <div class="khata-breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span class="separator">/</span>
+            <span>Scan Chit</span>
+        </div>
+
+        <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.03em;">
+            Digitize Paper Chit
+        </h1>
+        <p class="font-editorial text-muted small mb-4" style="font-size: 0.95rem;">
+            Upload or capture a photo of your handwritten receipt. Choose whether it represents a customer sale or a supplier purchase.
+        </p>
+
+        <!-- Stepper Indicator -->
+        <div class="d-flex align-items-center justify-content-between mb-4 px-2">
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center text-white" style="width: 24px; height: 24px; background-color: var(--dark-base); font-size: 0.75rem;">1</span>
+                <span class="small fw-semibold text-dark">Upload &amp; Party</span>
+            </div>
+            <div class="flex-grow-1 mx-2" style="height: 1px; background-color: var(--border-default);"></div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center border" style="width: 24px; height: 24px; background-color: var(--bg-subtle); color: var(--text-muted); font-size: 0.75rem;">2</span>
+                <span class="small text-muted font-editorial">OCR Scan</span>
+            </div>
+            <div class="flex-grow-1 mx-2" style="height: 1px; background-color: var(--border-default);"></div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge rounded-circle p-2 d-inline-flex align-items-center justify-content-center border" style="width: 24px; height: 24px; background-color: var(--bg-subtle); color: var(--text-muted); font-size: 0.75rem;">3</span>
+                <span class="small text-muted font-editorial">Verify</span>
+            </div>
+        </div>
+
+        <!-- Upload Form Card -->
+        <div class="khata-card float-elevated">
+            <div class="khata-card-body p-4 p-sm-5">
+                <form method="post" enctype="multipart/form-data" novalidate id="chitUploadForm">
+                    {% csrf_token %}
+
+                    <!-- Party Selection: Customer vs Seller -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-dark mb-2">
+                            Transaction Party <span style="color: var(--terracotta);">*</span>
+                        </label>
+                        
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <label class="party-radio-box active" id="customerRadioLabel">
+                                    <input type="radio" name="chit_type" value="customer" id="radioCustomer" class="d-none" checked onchange="togglePartyFields('customer')">
+                                    <div class="fs-3 mb-1">👤</div>
+                                    <strong class="d-block text-dark small">Customer</strong>
+                                    <span class="text-muted font-editorial" style="font-size: 0.775rem;">Counter Sale / Udhar</span>
+                                </label>
+                            </div>
+                            <div class="col-6">
+                                <label class="party-radio-box" id="sellerRadioLabel">
+                                    <input type="radio" name="chit_type" value="seller" id="radioSeller" class="d-none" onchange="togglePartyFields('seller')">
+                                    <div class="fs-3 mb-1">🏢</div>
+                                    <strong class="d-block text-dark small">Supplier / Seller</strong>
+                                    <span class="text-muted font-editorial" style="font-size: 0.775rem;">Inventory Purchase</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Customer Section -->
+                    <div id="customerSection" class="p-3 rounded mb-4" style="background-color: var(--bg-page); border: 1px solid var(--border-default);">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">👤</span>
+                            <strong class="small text-dark">Customer Information</strong>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark mb-1" for="{{ form.new_customer_name.id_for_label }}">
+                                Customer Name
+                            </label>
+                            {{ form.new_customer_name }}
+                            <div class="form-text small font-editorial text-muted">e.g. Tariq Bhai, Uncle Rashid, Haji Sahab</div>
+                            {% for error in form.new_customer_name.errors %}
+                                <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold text-muted mb-1" for="{{ form.new_customer_phone.id_for_label }}">
+                                    Customer Phone (Optional)
+                                </label>
+                                {{ form.new_customer_phone }}
+                            </div>
+                            {% if form.customer.field.queryset.exists %}
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold text-muted mb-1" for="{{ form.customer.id_for_label }}">
+                                    Or Select Existing:
+                                </label>
+                                {{ form.customer }}
+                            </div>
+                            {% else %}
+                            <div class="d-none">
+                                {{ form.customer }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Seller Section (Hidden by default) -->
+                    <div id="sellerSection" class="p-3 rounded mb-4 d-none" style="background-color: var(--bg-page); border: 1px solid var(--border-default);">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="fs-5">🏢</span>
+                            <strong class="small text-dark">Supplier / Wholesaler Details</strong>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-dark mb-1" for="{{ form.new_seller_name.id_for_label }}">
+                                Supplier Name
+                            </label>
+                            {{ form.new_seller_name }}
+                            <div class="form-text small font-editorial text-muted">e.g. Metro Cash &amp; Carry, Rice Wholesale Depot</div>
+                            {% for error in form.new_seller_name.errors %}
+                                <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="row g-2">
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold text-muted mb-1" for="{{ form.new_seller_phone.id_for_label }}">
+                                    Supplier Phone (Optional)
+                                </label>
+                                {{ form.new_seller_phone }}
+                            </div>
+                            {% if form.seller.field.queryset.exists %}
+                            <div class="col-sm-6">
+                                <label class="form-label small fw-semibold text-muted mb-1" for="{{ form.seller.id_for_label }}">
+                                    Or Select Existing:
+                                </label>
+                                {{ form.seller }}
+                            </div>
+                            {% else %}
+                            <div class="d-none">
+                                {{ form.seller }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Receipt Image Field & Antigravity Dropzone -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold small text-dark mb-2">
+                            Chit Photo / Receipt Slip <span style="color: var(--terracotta);">*</span>
+                        </label>
+
+                        <div class="khata-upload-dropzone mb-2" id="dropzoneArea" onclick="document.getElementById('chitImageInput').click();">
+                            <div class="khata-upload-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </div>
+                            <div class="fw-semibold text-dark fs-6 mb-1">
+                                Click to select chit photo or drag &amp; drop
+                            </div>
+                            <div class="text-muted small font-editorial">
+                                High contrast photos of paper chits work best (JPG, PNG, HEIC)
+                            </div>
+                        </div>
+
+                        <!-- Actual file input -->
+                        <div class="d-none">
+                            {{ form.image }}
+                        </div>
+
+                        <!-- Live Photo Preview -->
+                        <div id="imagePreviewContainer" class="d-none mt-3 text-center">
+                            <div class="p-2 border rounded bg-white shadow-sm d-inline-block position-relative" style="border-color: var(--border-default) !important;">
+                                <img id="previewImg" src="#" alt="Selected Chit" class="rounded" width="800" height="600" loading="lazy" decoding="async" style="max-height: 240px; max-width: 100%; object-fit: contain; aspect-ratio: 4/3;">
+                                <div class="mt-2 text-muted small fw-medium" id="previewFileName"></div>
+                            </div>
+                        </div>
+
+                        {% for error in form.image.errors %}
+                            <div class="small mt-2" style="color: var(--terracotta);">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn btn-khata-terracotta w-100 py-2 fs-6" id="uploadSubmitBtn">
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        Upload &amp; Scan with OCR
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-0 bg-transparent mt-3 text-center">
+            <p class="text-muted small mb-0 font-editorial">
+                🔒 Receipts are encrypted and isolated to your store ledger.
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function togglePartyFields(partyType) {
+        const customerSec = document.getElementById('customerSection');
+        const sellerSec = document.getElementById('sellerSection');
+        const custLabel = document.getElementById('customerRadioLabel');
+        const sellerLabel = document.getElementById('sellerRadioLabel');
+
+        if (partyType === 'seller') {
+            customerSec.classList.add('d-none');
+            sellerSec.classList.remove('d-none');
+            sellerLabel.classList.add('active');
+            custLabel.classList.remove('active');
+            document.getElementById('radioSeller').checked = true;
+        } else {
+            sellerSec.classList.add('d-none');
+            customerSec.classList.remove('d-none');
+            custLabel.classList.add('active');
+            sellerLabel.classList.remove('active');
+            document.getElementById('radioCustomer').checked = true;
+        }
+    }
+
+    const fileInput = document.getElementById('chitImageInput');
+    const previewContainer = document.getElementById('imagePreviewContainer');
+    const previewImg = document.getElementById('previewImg');
+    const previewFileName = document.getElementById('previewFileName');
+    const dropzone = document.getElementById('dropzoneArea');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    previewImg.src = event.target.result;
+                    previewFileName.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+                    previewContainer.classList.remove('d-none');
+                    dropzone.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Drag and drop handling
+    if (dropzone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.add('dragover');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropzone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropzone.classList.remove('dragover');
+            }, false);
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files && files.length) {
+                fileInput.files = files;
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+        }, false);
+    }
+</script>
+{% endblock %}

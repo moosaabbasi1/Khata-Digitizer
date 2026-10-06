@@ -1,0 +1,148 @@
+<!-- ==========================================================================
+     SkeletonDashboard Component (Antigravity Zero-CLS Shimmer Screen)
+     Mirrors dashboard.html layout, typography heights, radii, and grid gaps.
+     ========================================================================== -->
+<div id="skeleton-dashboard" class="khata-skeleton-dashboard dashboard-transition" aria-busy="true" aria-live="polite" role="status" aria-label="Loading Store Financial Dashboard">
+    <span class="sr-only">Loading financial aggregations, KPI summary metrics, and recent chits...</span>
+
+    <!-- Top Header & Action Controls Skeleton -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <div class="skeleton-element skeleton-title" style="width: 190px;"></div>
+                <div class="skeleton-element skeleton-badge" style="width: 88px;"></div>
+            </div>
+            <div class="skeleton-element skeleton-text" style="width: 320px; max-width: 100%;"></div>
+        </div>
+        <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+            <div class="skeleton-element skeleton-btn flex-fill flex-md-initial" style="width: 140px;"></div>
+            <div class="skeleton-element skeleton-btn flex-fill flex-md-initial" style="width: 120px;"></div>
+        </div>
+    </div>
+
+    <!-- Segmented Time Range Filter Skeleton -->
+    <div class="d-flex align-items-center mb-4 overflow-auto pb-1">
+        <div class="khata-period-group" style="pointer-events: none;">
+            <div class="skeleton-element skeleton-pill" style="width: 68px;"></div>
+            <div class="skeleton-element skeleton-pill" style="width: 82px;"></div>
+            <div class="skeleton-element skeleton-pill" style="width: 90px;"></div>
+            <div class="skeleton-element skeleton-pill" style="width: 76px;"></div>
+        </div>
+    </div>
+
+    <!-- Summary KPI Cards Grid (Bento Layout) -->
+    <div class="row g-3 mb-4">
+        <!-- Card 1: Total Sales / Volume -->
+        <div class="col-6 col-lg-3">
+            <div class="khata-skeleton-stat">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="skeleton-element skeleton-text" style="width: 85px; height: 12px;"></div>
+                    <div class="skeleton-element skeleton-icon-box"></div>
+                </div>
+                <div class="skeleton-element skeleton-stat-num mt-2" style="width: 70%;"></div>
+                <div class="skeleton-element skeleton-text mt-2" style="width: 90%; height: 11px;"></div>
+            </div>
+        </div>
+
+        <!-- Card 2: Total Purchases / Outstanding Udhar -->
+        <div class="col-6 col-lg-3">
+            <div class="khata-skeleton-stat">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="skeleton-element skeleton-text" style="width: 105px; height: 12px;"></div>
+                    <div class="skeleton-element skeleton-icon-box"></div>
+                </div>
+                <div class="skeleton-element skeleton-stat-num mt-2" style="width: 65%;"></div>
+                <div class="skeleton-element skeleton-text mt-2" style="width: 75%; height: 11px;"></div>
+            </div>
+        </div>
+
+        <!-- Card 3: Settled Cash -->
+        <div class="col-6 col-lg-3">
+            <div class="khata-skeleton-stat">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="skeleton-element skeleton-text" style="width: 80px; height: 12px;"></div>
+                    <div class="skeleton-element skeleton-icon-box"></div>
+                </div>
+                <div class="skeleton-element skeleton-stat-num mt-2" style="width: 75%;"></div>
+                <div class="skeleton-element skeleton-text mt-2" style="width: 85%; height: 11px;"></div>
+            </div>
+        </div>
+
+        <!-- Card 4: Net Balance / Estimated Margin -->
+        <div class="col-6 col-lg-3">
+            <div class="khata-skeleton-stat">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="skeleton-element skeleton-text" style="width: 100px; height: 12px;"></div>
+                    <div class="skeleton-element skeleton-icon-box"></div>
+                </div>
+                <div class="skeleton-element skeleton-stat-num mt-2" style="width: 60%;"></div>
+                <div class="skeleton-element skeleton-text mt-2" style="width: 80%; height: 11px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Chits Section Table / List Skeleton -->
+    <div class="khata-skeleton-card mb-4">
+        <!-- Card Header -->
+        <div class="khata-card-header">
+            <div class="skeleton-element skeleton-title" style="width: 180px; height: 1.25rem;"></div>
+            <div class="skeleton-element skeleton-btn" style="width: 130px; height: 32px;"></div>
+        </div>
+
+        <!-- Desktop Table Skeleton (5 Recent Chit Rows) -->
+        <div class="d-none d-md-block table-responsive">
+            <table class="khata-table">
+                <thead>
+                    <tr>
+                        <th style="width: 18%;"><div class="skeleton-element skeleton-text" style="width: 65px; height: 10px;"></div></th>
+                        <th style="width: 30%;"><div class="skeleton-element skeleton-text" style="width: 110px; height: 10px;"></div></th>
+                        <th class="text-center" style="width: 12%;"><div class="skeleton-element skeleton-text mx-auto" style="width: 50px; height: 10px;"></div></th>
+                        <th class="text-end" style="width: 15%;"><div class="skeleton-element skeleton-text ms-auto" style="width: 70px; height: 10px;"></div></th>
+                        <th class="text-end" style="width: 13%;"><div class="skeleton-element skeleton-text ms-auto" style="width: 60px; height: 10px;"></div></th>
+                        <th class="text-center" style="width: 12%;"><div class="skeleton-element skeleton-text mx-auto" style="width: 45px; height: 10px;"></div></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for i in "12345" %}
+                    <tr>
+                        <td><div class="skeleton-element skeleton-text" style="width: 100px; height: 13px;"></div></td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="skeleton-element skeleton-badge" style="width: 75px; height: 20px;"></div>
+                                <div class="skeleton-element skeleton-text" style="width: 120px; height: 14px;"></div>
+                            </div>
+                            <div class="skeleton-element skeleton-text mt-1" style="width: 90px; height: 10px;"></div>
+                        </td>
+                        <td class="text-center"><div class="skeleton-element skeleton-badge mx-auto" style="width: 55px; height: 20px;"></div></td>
+                        <td class="text-end"><div class="skeleton-element skeleton-text ms-auto" style="width: 80px; height: 15px;"></div></td>
+                        <td class="text-end"><div class="skeleton-element skeleton-badge ms-auto" style="width: 90px; height: 20px;"></div></td>
+                        <td class="text-center"><div class="skeleton-element skeleton-btn mx-auto" style="width: 80px; height: 28px;"></div></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile List View Skeleton (5 Cards) -->
+        <div class="d-md-none p-3">
+            {% for i in "12345" %}
+            <div class="mobile-ledger-card mb-2">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div style="flex: 1;">
+                        <div class="d-flex align-items-center gap-1 mb-1">
+                            <div class="skeleton-element skeleton-badge" style="width: 70px; height: 18px;"></div>
+                            <div class="skeleton-element skeleton-text" style="width: 110px; height: 14px;"></div>
+                        </div>
+                        <div class="skeleton-element skeleton-text" style="width: 130px; height: 11px;"></div>
+                    </div>
+                    <div class="text-end">
+                        <div class="skeleton-element skeleton-text ms-auto" style="width: 65px; height: 16px;"></div>
+                        <div class="skeleton-element skeleton-badge ms-auto mt-1" style="width: 60px; height: 18px;"></div>
+                    </div>
+                </div>
+                <div class="skeleton-element skeleton-btn w-100 mt-1" style="height: 32px;"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

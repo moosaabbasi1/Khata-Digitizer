@@ -1,0 +1,1076 @@
+/* ==========================================================================
+   Khata Digitizer — Antigravity Design System
+   Weightless UI aesthetics, fluid spatial dynamics, subtle hover elevations,
+   refined typography (Inter Tight + Times New Roman editorial serif),
+   and razor-sharp hairline borders.
+   ========================================================================== */
+
+:root {
+    /* Typefaces */
+    --font-sans: 'Inter Tight', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-serif: 'Times New Roman', Times, Georgia, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* Base Colors */
+    --bg-page: #F6F7F9;
+    --bg-surface: #FFFFFF;
+    --bg-surface-elevated: #FFFFFF;
+    --bg-subtle: #ECEEF2;
+    --bg-hover: #F8F9FB;
+
+    /* Typography Hierarchy */
+    --text-primary: #232528;       /* Deep Charcoal Base */
+    --text-secondary: #52575E;     /* Muted Charcoal */
+    --text-muted: #79808A;         /* Slate Neutral */
+    --text-editorial: #373A3F;     /* Rich Editorial Tone */
+    --text-inverse: #FFFFFF;
+
+    /* Antigravity Color Tokens */
+    --dark-base: #232528;
+    --mint: #98E4B4;
+    --mint-bg: #EBFBF2;
+    --mint-border: #A3EBB1;
+    --mint-text: #165B33;
+
+    --terracotta: #C46445;
+    --terracotta-hover: #B05537;
+    --terracotta-bg: #FCF1ED;
+    --terracotta-border: #F3BCAC;
+    --terracotta-text: #8F3517;
+
+    --slate-violet: #6C6A8F;
+    --slate-violet-bg: #F1F0F7;
+    --slate-violet-border: #CBC9DD;
+    --slate-violet-text: #454366;
+
+    --atm-blue: #7E9DB9;
+    --atm-blue-bg: #EFF5FA;
+    --atm-blue-border: #B9D1E4;
+    --atm-blue-text: #274D6E;
+
+    /* Hairline Borders */
+    --border-subtle: #F0F1F4;
+    --border-default: #E8E8E8;
+    --border-strong: #D5D8DE;
+    --border-dark: #232528;
+
+    /* Radii */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-full: 9999px;
+
+    /* Antigravity Physics Elevation Shadows */
+    --shadow-antigravity-xs: 0 1px 2px rgba(35, 37, 40, 0.04);
+    --shadow-antigravity-sm: 0 2px 6px -1px rgba(35, 37, 40, 0.06), 0 1px 3px rgba(35, 37, 40, 0.03);
+    --shadow-antigravity-md: 0 8px 24px -4px rgba(35, 37, 40, 0.08), 0 2px 6px -1px rgba(35, 37, 40, 0.04);
+    --shadow-antigravity-lg: 0 18px 40px -8px rgba(35, 37, 40, 0.12), 0 6px 14px -3px rgba(35, 37, 40, 0.05);
+    --shadow-float: 0 24px 48px -12px rgba(35, 37, 40, 0.16), 0 8px 20px -4px rgba(35, 37, 40, 0.08);
+
+    /* Transitions */
+    --ease-antigravity: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ==========================================================================
+   Global Resets & Typography
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: var(--font-sans);
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+    line-height: 1.25;
+}
+
+/* Editorial Serif Utility */
+.font-editorial, .ledger-serif {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    color: var(--text-editorial);
+    letter-spacing: -0.01em;
+}
+
+/* Tabular Financial Numbers */
+.tabular-nums,
+.currency-num,
+.khata-num,
+td.text-end,
+th.text-end {
+    font-family: var(--font-sans);
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "cv05" 1, "tnum" 1;
+    letter-spacing: -0.02em;
+}
+
+/* Accessibility Keyboard Focus */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: none !important;
+    border-color: var(--terracotta) !important;
+    box-shadow: 0 0 0 3px rgba(196, 100, 69, 0.18) !important;
+}
+
+/* ==========================================================================
+   Navigation Bar (Frosted Glass & Weightless Feel)
+   ========================================================================== */
+.khata-navbar {
+    background-color: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border-default);
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    padding: 0.75rem 0;
+    transition: all 0.25s var(--ease-antigravity);
+}
+
+.khata-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    letter-spacing: -0.03em;
+}
+
+.khata-brand:hover {
+    color: var(--dark-base);
+}
+
+.khata-brand-icon {
+    width: 34px;
+    height: 34px;
+    background: var(--dark-base);
+    color: #FFFFFF;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(35, 37, 40, 0.18);
+    flex-shrink: 0;
+    transition: transform 0.25s var(--ease-antigravity);
+}
+
+.khata-brand:hover .khata-brand-icon {
+    transform: translateY(-1px) scale(1.02);
+}
+
+.khata-brand-text {
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+}
+
+.khata-brand-text span {
+    color: var(--terracotta);
+    font-weight: 400;
+    font-family: var(--font-serif);
+    font-style: italic;
+    margin-left: 2px;
+}
+
+/* Navigation Links */
+.khata-nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    padding: 0.45rem 0.85rem !important;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s var(--ease-antigravity);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    text-decoration: none;
+}
+
+.khata-nav-link:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-subtle);
+    transform: translateY(-1px);
+}
+
+.khata-nav-link.active {
+    color: var(--dark-base) !important;
+    background-color: var(--bg-surface);
+    box-shadow: var(--shadow-antigravity-xs);
+    border: 1px solid var(--border-default);
+    font-weight: 600;
+}
+
+/* Shop Identity Pill */
+.khata-shop-badge {
+    background-color: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary);
+    font-weight: 500;
+    font-size: 0.8rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+}
+
+/* ==========================================================================
+   Antigravity Surface Cards & Containers
+   ========================================================================== */
+.khata-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-antigravity-xs);
+    transition: transform 0.25s var(--ease-antigravity), box-shadow 0.25s var(--ease-antigravity), border-color 0.25s var(--ease-antigravity);
+    overflow: hidden;
+}
+
+.khata-card:hover {
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-antigravity-sm);
+}
+
+.khata-card.float-elevated {
+    box-shadow: var(--shadow-antigravity-md);
+}
+
+.khata-card.float-elevated:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-antigravity-lg);
+}
+
+.khata-card-header {
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border-subtle);
+    padding: 1rem 1.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.khata-card-body {
+    padding: 1.35rem;
+}
+
+/* ==========================================================================
+   Bento Metric Tiles (Antigravity Floating KPIs)
+   ========================================================================== */
+.khata-stat-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-antigravity-xs);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    position: relative;
+    transition: transform 0.28s var(--ease-antigravity), box-shadow 0.28s var(--ease-antigravity), border-color 0.2s ease;
+}
+
+.khata-stat-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--border-strong);
+    box-shadow: var(--shadow-antigravity-md);
+}
+
+.khata-stat-card.stat-primary {
+    border-top: 3px solid var(--dark-base);
+}
+
+.khata-stat-card.stat-danger,
+.khata-stat-card.stat-terracotta {
+    border-top: 3px solid var(--terracotta);
+    background: linear-gradient(180deg, #FFFCFA 0%, #FFFFFF 100%);
+}
+
+.khata-stat-card.stat-success,
+.khata-stat-card.stat-mint {
+    border-top: 3px solid var(--mint-text);
+    background: linear-gradient(180deg, #FAFEFC 0%, #FFFFFF 100%);
+}
+
+.khata-stat-card.stat-slate {
+    border-top: 3px solid var(--slate-violet);
+    background: linear-gradient(180deg, #FBFBFC 0%, #FFFFFF 100%);
+}
+
+.khata-stat-card.stat-neutral {
+    border-top: 3px solid var(--atm-blue);
+}
+
+.khata-stat-label {
+    font-size: 0.725rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.khata-stat-value {
+    font-size: 1.7rem;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    color: var(--text-primary);
+    line-height: 1.15;
+}
+
+.khata-stat-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.khata-stat-card:hover .khata-stat-icon {
+    transform: scale(1.05);
+}
+
+.khata-stat-subtext {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.4rem;
+}
+
+/* ==========================================================================
+   Buttons (Disciplined Weight & Subtle Elevation)
+   ========================================================================== */
+.btn-khata-primary {
+    background-color: var(--dark-base);
+    border: 1px solid var(--dark-base);
+    color: #FFFFFF !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 2px rgba(35, 37, 40, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s var(--ease-antigravity);
+    min-height: 40px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-khata-primary:hover {
+    background-color: #383B40;
+    border-color: #383B40;
+    box-shadow: var(--shadow-antigravity-sm);
+    transform: translateY(-1px);
+}
+
+.btn-khata-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--shadow-antigravity-xs);
+}
+
+.btn-khata-terracotta {
+    background-color: var(--terracotta);
+    border: 1px solid var(--terracotta);
+    color: #FFFFFF !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 4px rgba(196, 100, 69, 0.2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s var(--ease-antigravity);
+    min-height: 40px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-khata-terracotta:hover {
+    background-color: var(--terracotta-hover);
+    border-color: var(--terracotta-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(196, 100, 69, 0.3);
+}
+
+.btn-khata-secondary {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    color: var(--text-primary) !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    transition: all 0.2s var(--ease-antigravity);
+    min-height: 40px;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-antigravity-xs);
+}
+
+.btn-khata-secondary:hover {
+    background-color: var(--bg-subtle);
+    border-color: var(--border-strong);
+    color: var(--text-primary) !important;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-antigravity-sm);
+}
+
+.btn-khata-secondary:active {
+    transform: translateY(1px);
+}
+
+.btn-khata-outline-orange {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--terracotta-border);
+    color: var(--terracotta-text) !important;
+    font-weight: 500;
+    font-size: 0.875rem;
+    padding: 0.55rem 1.15rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    transition: all 0.2s var(--ease-antigravity);
+    min-height: 40px;
+    text-decoration: none;
+}
+
+.btn-khata-outline-orange:hover {
+    background-color: var(--terracotta-bg);
+    border-color: var(--terracotta);
+    transform: translateY(-1px);
+}
+
+.btn-khata-success {
+    background-color: var(--mint-text);
+    border: 1px solid var(--mint-text);
+    color: #FFFFFF !important;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    transition: all 0.2s var(--ease-antigravity);
+    text-decoration: none;
+    box-shadow: 0 1px 3px rgba(22, 91, 51, 0.2);
+}
+
+.btn-khata-success:hover {
+    background-color: #124828;
+    border-color: #124828;
+    transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   Segmented Period Filter (Pills)
+   ========================================================================== */
+.khata-period-group {
+    background: var(--bg-subtle);
+    border: 1px solid var(--border-default);
+    padding: 3px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    gap: 3px;
+}
+
+.khata-period-pill {
+    padding: 0.4rem 0.95rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    border-radius: 6px;
+    text-decoration: none;
+    transition: all 0.2s var(--ease-antigravity);
+    white-space: nowrap;
+}
+
+.khata-period-pill:hover {
+    color: var(--text-primary);
+}
+
+.khata-period-pill.active {
+    background-color: var(--bg-surface);
+    color: var(--dark-base);
+    box-shadow: var(--shadow-antigravity-xs);
+    font-weight: 600;
+    border: 1px solid var(--border-subtle);
+}
+
+/* ==========================================================================
+   Dense Financial Tables
+   ========================================================================== */
+.khata-table {
+    margin-bottom: 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.khata-table th {
+    font-size: 0.725rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    background-color: #F8F9FB;
+    border-top: none;
+    border-bottom: 1px solid var(--border-default);
+    padding: 0.8rem 1.15rem;
+    white-space: nowrap;
+}
+
+.khata-table td {
+    padding: 0.85rem 1.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.875rem;
+    color: var(--text-primary);
+}
+
+.khata-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.khata-table tbody tr:hover {
+    background-color: #F8F9FB;
+}
+
+.khata-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ==========================================================================
+   Badges (Antigravity Palette Tokens)
+   ========================================================================== */
+.khata-badge {
+    font-size: 0.725rem;
+    font-weight: 500;
+    padding: 0.22rem 0.6rem;
+    border-radius: var(--radius-full);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.khata-badge-danger,
+.khata-badge-terracotta {
+    background-color: var(--terracotta-bg);
+    color: var(--terracotta-text);
+    border: 1px solid var(--terracotta-border);
+}
+
+.khata-badge-success,
+.khata-badge-mint {
+    background-color: var(--mint-bg);
+    color: var(--mint-text);
+    border: 1px solid var(--mint-border);
+}
+
+.khata-badge-info,
+.khata-badge-blue {
+    background-color: var(--atm-blue-bg);
+    color: var(--atm-blue-text);
+    border: 1px solid var(--atm-blue-border);
+}
+
+.khata-badge-slate {
+    background-color: var(--slate-violet-bg);
+    color: var(--slate-violet-text);
+    border: 1px solid var(--slate-violet-border);
+}
+
+.khata-badge-neutral {
+    background-color: var(--bg-subtle);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-default);
+}
+
+/* ==========================================================================
+   Chit Upload Dropzone & Party Selection
+   ========================================================================== */
+.khata-upload-dropzone {
+    border: 2px dashed var(--border-strong);
+    background-color: #FAFBFD;
+    border-radius: var(--radius-lg);
+    padding: 2.75rem 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-antigravity);
+    position: relative;
+}
+
+.khata-upload-dropzone:hover,
+.khata-upload-dropzone.dragover {
+    border-color: var(--terracotta);
+    background-color: var(--terracotta-bg);
+    transform: translateY(-2px);
+}
+
+.khata-upload-icon {
+    width: 52px;
+    height: 52px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--shadow-antigravity-xs);
+    transition: transform 0.25s var(--ease-antigravity);
+}
+
+.khata-upload-dropzone:hover .khata-upload-icon {
+    transform: translateY(-2px) scale(1.05);
+    border-color: var(--terracotta-border);
+    color: var(--terracotta);
+}
+
+/* Party selection radio tiles */
+.party-radio-box {
+    border: 1px solid var(--border-default);
+    background: var(--bg-surface);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s var(--ease-antigravity);
+    display: block;
+}
+
+.party-radio-box:hover {
+    border-color: var(--border-strong);
+    background-color: var(--bg-subtle);
+    transform: translateY(-2px);
+}
+
+.party-radio-box.active {
+    border-color: var(--dark-base) !important;
+    background-color: #FFFFFF !important;
+    box-shadow: 0 0 0 2px var(--dark-base), var(--shadow-antigravity-sm);
+}
+
+/* ==========================================================================
+   Review Chit Workbench & Sticky Summary
+   ========================================================================== */
+.workbench-chit-frame {
+    border: 1px solid var(--dark-base);
+    border-radius: var(--radius-md);
+    background: var(--dark-base);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-antigravity-md);
+}
+
+.workbench-chit-img {
+    max-height: 460px;
+    width: 100%;
+    object-fit: contain;
+    background: var(--dark-base);
+    display: block;
+    margin: 0 auto;
+}
+
+.workbench-sticky-summary {
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-default);
+    box-shadow: 0 -6px 20px rgba(35, 37, 40, 0.06);
+    padding: 1rem 1.35rem;
+    z-index: 1010;
+    border-bottom-left-radius: var(--radius-md);
+    border-bottom-right-radius: var(--radius-md);
+}
+
+/* ==========================================================================
+   Form Controls
+   ========================================================================== */
+.khata-form-control,
+.form-control,
+.form-select,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="tel"],
+select,
+textarea {
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.85rem;
+    font-family: var(--font-sans);
+    font-size: 0.925rem;
+    color: var(--text-primary);
+    background-color: var(--bg-surface);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    min-height: 42px;
+    width: 100%;
+}
+
+.khata-form-control:focus,
+.form-control:focus,
+.form-select:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="number"]:focus,
+input[type="tel"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--terracotta) !important;
+    box-shadow: 0 0 0 3px rgba(196, 100, 69, 0.15) !important;
+    outline: none;
+}
+
+.form-check-input:checked {
+    background-color: var(--dark-base);
+    border-color: var(--dark-base);
+}
+
+/* Password Input Visibility Toggle */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.password-input-wrapper .form-control,
+.password-input-wrapper input[type="password"],
+.password-input-wrapper input[type="text"] {
+    padding-right: 2.75rem !important;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 0.65rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0.35rem;
+    margin: 0;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xs);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    z-index: 4;
+    line-height: 1;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.password-toggle-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-subtle);
+}
+
+.password-toggle-btn:focus {
+    outline: none;
+}
+
+.password-toggle-btn:focus-visible {
+    outline: 2px solid var(--terracotta);
+    outline-offset: 1px;
+}
+
+.password-toggle-btn svg {
+    display: block;
+    width: 18px;
+    height: 18px;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   Breadcrumb & Headings
+   ========================================================================== */
+.khata-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.khata-breadcrumb a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.15s ease;
+}
+
+.khata-breadcrumb a:hover {
+    color: var(--text-primary);
+}
+
+.khata-breadcrumb .separator {
+    color: var(--border-strong);
+}
+
+/* Mobile Responsive Ledger Cards */
+.mobile-ledger-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 1.15rem;
+    margin-bottom: 0.85rem;
+    box-shadow: var(--shadow-antigravity-xs);
+    transition: transform 0.25s var(--ease-antigravity), box-shadow 0.25s var(--ease-antigravity);
+}
+
+.mobile-ledger-card:hover {
+    box-shadow: var(--shadow-antigravity-sm);
+}
+
+.mobile-ledger-card.pending {
+    border-left: 3px solid var(--terracotta);
+}
+
+.mobile-ledger-card.paid {
+    border-left: 3px solid var(--mint-text);
+    background-color: #FAFCFA;
+}
+
+/* Mobile Fixed Bottom Navigation Bar */
+.khata-bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--border-default);
+    box-shadow: 0 -4px 18px rgba(35, 37, 40, 0.06);
+    z-index: 1030;
+    height: 64px;
+    padding: 0.25rem 0.5rem;
+    padding-bottom: env(safe-area-inset-bottom, 0.25rem);
+}
+
+@media (max-width: 767.98px) {
+    .khata-bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+    body {
+        padding-bottom: 80px !important;
+    }
+}
+
+.khata-bottom-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.7rem;
+    font-weight: 500;
+    gap: 2px;
+    flex: 1;
+    height: 100%;
+    position: relative;
+    transition: color 0.15s ease;
+}
+
+.khata-bottom-item:hover,
+.khata-bottom-item.active {
+    color: var(--terracotta);
+}
+
+.khata-bottom-item svg {
+    width: 20px;
+    height: 20px;
+    stroke-width: 2;
+}
+
+.khata-bottom-item .badge-dot {
+    position: absolute;
+    top: 5px;
+    right: calc(50% - 14px);
+    background-color: var(--terracotta);
+    color: #FFFFFF;
+    font-size: 0.65rem;
+    padding: 1px 5px;
+    border-radius: var(--radius-full);
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.khata-bottom-action-btn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--terracotta);
+    color: #FFFFFF !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(196, 100, 69, 0.35);
+    margin-top: -18px;
+    border: 3px solid #FFFFFF;
+    transition: transform 0.2s var(--ease-antigravity);
+    flex-shrink: 0;
+}
+
+.khata-bottom-action-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+}
+
+.khata-bottom-action-btn:active {
+    transform: scale(0.94);
+}
+
+/* ==========================================================================
+   Skeleton Loading System (Antigravity Zero-CLS Shimmer)
+   ========================================================================== */
+@keyframes khata-shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+@keyframes khata-pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.55;
+    }
+}
+
+.skeleton-element {
+    background: linear-gradient(90deg, #E8E8E8 0%, #F5F5F7 50%, #E8E8E8 100%);
+    background-size: 200% 100%;
+    animation: khata-shimmer 1.5s ease-in-out infinite, khata-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    border-radius: var(--radius-xs);
+    display: inline-block;
+    flex-shrink: 0;
+    vertical-align: middle;
+}
+
+.skeleton-text {
+    height: 0.85rem;
+    border-radius: var(--radius-xs);
+    margin-bottom: 0.25rem;
+}
+
+.skeleton-title {
+    height: 1.75rem;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-badge {
+    height: 1.25rem;
+    border-radius: var(--radius-full);
+}
+
+.skeleton-pill {
+    height: 1.95rem;
+    border-radius: var(--radius-xs);
+}
+
+.skeleton-btn {
+    height: 38px;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-icon-box {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-sm);
+}
+
+.skeleton-stat-num {
+    height: 2rem;
+    border-radius: var(--radius-xs);
+}
+
+.skeleton-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.khata-skeleton-stat {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    box-shadow: var(--shadow-antigravity-xs);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    min-height: 122px;
+}
+
+.khata-skeleton-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-antigravity-xs);
+    overflow: hidden;
+}
+
+.dashboard-transition {
+    transition: opacity 0.2s var(--ease-antigravity);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

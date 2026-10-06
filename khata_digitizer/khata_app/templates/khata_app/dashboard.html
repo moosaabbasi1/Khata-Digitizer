@@ -1,0 +1,482 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Dashboard — Khata Digitizer{% endblock %}
+
+{% block content %}
+<noscript>
+    <style>
+        #skeleton-dashboard { display: none !important; }
+        #dashboard-actual-content { display: block !important; opacity: 1 !important; }
+    </style>
+</noscript>
+
+<!-- Skeleton Loading Placeholder Screen (Active during initial fetch & period aggregations) -->
+{% include "khata_app/includes/skeleton_dashboard.html" %}
+
+<!-- Actual Shopkeeper Financial Dashboard Content -->
+<div id="dashboard-actual-content" class="dashboard-transition" style="display: none; opacity: 0;" aria-busy="false" aria-hidden="true">
+<!-- Top Header & Action Controls (Antigravity Asymmetric Header) -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h1 class="h3 fw-bold mb-0 text-dark" style="letter-spacing: -0.03em;">
+                Store Ledger Overview
+            </h1>
+            <span class="khata-badge khata-badge-mint">● Live Ledger</span>
+        </div>
+        <p class="font-editorial text-muted mb-0 small" style="font-size: 0.95rem;">
+            Store account for <strong class="text-dark">{{ user.shop_name|default:user.username }}</strong>. Real-time counter sales volume, gross margins, and customer credit (Udhar).
+        </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+        <a href="{% url 'credit_list' %}" class="btn btn-khata-secondary flex-fill flex-md-initial">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            <span>Udhar Ledger</span>
+            {% if total_pending_count %}
+                <span class="khata-badge khata-badge-terracotta ms-1">{{ total_pending_count }}</span>
+            {% endif %}
+        </a>
+        <a href="{% url 'chit_upload' %}" class="btn btn-khata-terracotta flex-fill flex-md-initial">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Scan New Chit</span>
+        </a>
+    </div>
+</div>
+
+<!-- Segmented Time Range Filter -->
+<div class="d-flex align-items-center mb-4 overflow-auto pb-1">
+    <div class="khata-period-group">
+        {% for value, label in periods %}
+            <a href="?period={{ value }}"
+               class="khata-period-pill {% if period == value %}active{% endif %}">
+                {{ label }}
+            </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Financial Metrics Bento Grid -->
+<div class="row g-3 mb-4">
+    <!-- Total Volume -->
+    <div class="col-6 col-lg-3">
+        <div class="khata-stat-card stat-primary">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label">Total Volume</div>
+                <div class="khata-stat-icon" style="background: var(--bg-subtle); color: var(--dark-base);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num">
+                Rs {{ totals.total_sales|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext text-truncate font-editorial">
+                Recorded sales volume
+            </div>
+        </div>
+    </div>
+
+    <!-- Outstanding Udhar -->
+    <div class="col-6 col-lg-3">
+        <div class="khata-stat-card stat-terracotta">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--terracotta-text);">Outstanding Udhar</div>
+                <div class="khata-stat-icon" style="background: var(--terracotta-bg); color: var(--terracotta);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num" style="color: var(--terracotta);">
+                Rs {{ totals.total_credit_pending|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext">
+                <a href="{% url 'credit_list' %}" class="fw-semibold text-decoration-none small" style="color: var(--terracotta);">
+                    Open Udhar Ledger &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settled & Received -->
+    <div class="col-6 col-lg-3">
+        <div class="khata-stat-card stat-mint">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--mint-text);">Settled Cash</div>
+                <div class="khata-stat-icon" style="background: var(--mint-bg); color: var(--mint-text);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num" style="color: var(--mint-text);">
+                Rs {{ totals.total_paid|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext text-truncate font-editorial">
+                Counter cash + settled credits
+            </div>
+        </div>
+    </div>
+
+    <!-- Gross Margin / Profit -->
+    <div class="col-6 col-lg-3">
+        <div class="khata-stat-card stat-slate">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--slate-violet-text);">Estimated Margin</div>
+                <div class="khata-stat-icon" style="background: var(--slate-violet-bg); color: var(--slate-violet);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                        <polyline points="17 6 23 6 23 12"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num">
+                Rs {{ totals.profit_total|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext text-truncate font-editorial">
+                {% if totals.profit_has_no_data %}
+                    No cost prices recorded
+                {% elif totals.profit_is_partial %}
+                    {{ totals.items_with_cost_count }} of {{ totals.items_total_count }} items tracked
+                {% else %}
+                    Full cost basis tracked
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pending Credit Items Section (Udhar to Collect) -->
+<div class="khata-card mb-4">
+    <div class="khata-card-header">
+        <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-circle" style="width: 8px; height: 8px; background-color: var(--terracotta);"></span>
+            <h5 class="mb-0 fw-bold fs-6 text-dark" style="letter-spacing: -0.01em;">
+                Uncollected Credit (Pending Udhar)
+            </h5>
+            {% if total_pending_count %}
+                <span class="khata-badge khata-badge-terracotta">{{ total_pending_count }} items</span>
+            {% endif %}
+        </div>
+        <a href="{% url 'credit_list' %}" class="btn btn-sm btn-khata-secondary py-1 px-3 small">
+            View Full Udhar Ledger
+        </a>
+    </div>
+
+    {% if pending_credit_items %}
+        <!-- Desktop Table View -->
+        <div class="d-none d-md-block table-responsive">
+            <table class="khata-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Party</th>
+                        <th>Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Unit Rate</th>
+                        <th class="text-end">Balance Due</th>
+                        <th class="text-center">Reconcile</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in pending_credit_items %}
+                    <tr>
+                        <td class="text-muted small">
+                            <a href="{% url 'chit_detail' item.chit.id %}" class="text-decoration-none text-muted">
+                                {{ item.chit.upload_date|date:"d M, H:i" }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ item.chit.party_name }}</div>
+                            <div class="d-flex align-items-center gap-1 mt-1">
+                                {% if item.chit.chit_type == 'seller' %}
+                                    <span class="khata-badge khata-badge-blue" style="font-size: 0.65rem;">🏢 Supplier</span>
+                                {% else %}
+                                    <span class="khata-badge khata-badge-slate" style="font-size: 0.65rem;">👤 Customer</span>
+                                {% endif %}
+                                {% if item.chit.party_phone %}
+                                    <a href="tel:{{ item.chit.party_phone }}" class="text-muted small text-decoration-none">
+                                        {{ item.chit.party_phone }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-semibold text-dark">{{ item.item_name }}</span>
+                        </td>
+                        <td class="text-center font-monospace">{{ item.quantity|floatformat:"-2" }}</td>
+                        <td class="text-end text-muted font-monospace">Rs {{ item.price|floatformat:2 }}</td>
+                        <td class="text-end fw-bold font-monospace" style="color: var(--terracotta);">
+                            Rs {{ item.line_total|floatformat:2 }}
+                        </td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'item_toggle_paid' item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit" class="btn btn-sm btn-khata-success py-1 px-3">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                    </svg>
+                                    Mark Paid
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="d-md-none p-3">
+            {% for item in pending_credit_items %}
+            <div class="mobile-ledger-card pending">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <div class="fw-bold fs-6 text-dark">{{ item.chit.party_name }}</div>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            {% if item.chit.chit_type == 'seller' %}
+                                <span class="khata-badge khata-badge-blue" style="font-size: 0.65rem;">🏢 Supplier</span>
+                            {% else %}
+                                <span class="khata-badge khata-badge-slate" style="font-size: 0.65rem;">👤 Customer</span>
+                            {% endif %}
+                            {% if item.chit.party_phone %}
+                                <a href="tel:{{ item.chit.party_phone }}" class="text-muted small text-decoration-none">
+                                    {{ item.chit.party_phone }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fs-5 fw-bold font-monospace" style="color: var(--terracotta);">
+                            Rs {{ item.line_total|floatformat:2 }}
+                        </div>
+                        <span class="khata-badge khata-badge-terracotta">Udhar</span>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom my-2 small text-muted">
+                    <div>
+                        <strong class="text-dark">{{ item.item_name }}</strong>
+                        <span>({{ item.quantity|floatformat:"-2" }} &times; Rs {{ item.price|floatformat:2 }})</span>
+                    </div>
+                    <a href="{% url 'chit_detail' item.chit.id %}" class="text-decoration-none text-muted">
+                        {{ item.chit.upload_date|date:"d M, H:i" }}
+                    </a>
+                </div>
+
+                <form method="post" action="{% url 'item_toggle_paid' item.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="btn btn-khata-success w-100 py-2">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        Collect Payment (Mark Paid)
+                    </button>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="p-5 text-center text-muted">
+            <div class="mb-2 fs-3" style="color: var(--mint-text);">✓</div>
+            <h6 class="fw-bold text-dark">No pending credit balances</h6>
+            <p class="small mb-0 font-editorial">All customer balances are settled. New credit chits will be logged here automatically.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Recent Chits Section -->
+<div class="khata-card">
+    <div class="khata-card-header">
+        <h5 class="mb-0 fw-bold fs-6 text-dark" style="letter-spacing: -0.01em;">
+            Recent Scanned Chits
+        </h5>
+        <a href="{% url 'chit_upload' %}" class="btn btn-sm btn-khata-primary py-1 px-3">
+            + Scan New Chit
+        </a>
+    </div>
+
+    {% if recent_chits %}
+        <!-- Desktop Table View -->
+        <div class="d-none d-md-block table-responsive">
+            <table class="khata-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Party</th>
+                        <th class="text-center">Items</th>
+                        <th class="text-end">Total Amount</th>
+                        <th class="text-end">Status</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for chit in recent_chits %}
+                    <tr>
+                        <td class="text-muted small">
+                            {{ chit.upload_date|date:"d M Y, H:i" }}
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                {% if chit.chit_type == 'seller' %}
+                                    <span class="khata-badge khata-badge-blue" style="font-size: 0.7rem;">🏢 Supplier</span>
+                                {% else %}
+                                    <span class="khata-badge khata-badge-slate" style="font-size: 0.7rem;">👤 Customer</span>
+                                {% endif %}
+                                <strong class="text-dark">{{ chit.party_name }}</strong>
+                            </div>
+                            {% if chit.party_phone %}
+                                <div class="text-muted small mt-1">📞 {{ chit.party_phone }}</div>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <span class="khata-badge khata-badge-neutral">{{ chit.items_count|default:chit.items.all|length }} items</span>
+                        </td>
+                        <td class="text-end fw-bold font-monospace">
+                            Rs {{ chit.total_amount|floatformat:2 }}
+                        </td>
+                        <td class="text-end font-monospace">
+                            {% if chit.pending_credit_amount > 0 %}
+                                <span class="khata-badge khata-badge-terracotta">Udhar: Rs {{ chit.pending_credit_amount|floatformat:2 }}</span>
+                            {% else %}
+                                <span class="khata-badge khata-badge-mint">Settled</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'chit_detail' chit.id %}" class="btn btn-sm btn-khata-secondary py-1 px-3">
+                                View Chit
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="d-md-none p-3">
+            {% for chit in recent_chits %}
+            <div class="mobile-ledger-card mb-2">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <div class="d-flex align-items-center gap-1 mb-1">
+                            {% if chit.chit_type == 'seller' %}
+                                <span class="khata-badge khata-badge-blue" style="font-size: 0.65rem;">🏢 Supplier</span>
+                            {% else %}
+                                <span class="khata-badge khata-badge-slate" style="font-size: 0.65rem;">👤 Customer</span>
+                            {% endif %}
+                            <strong class="text-dark">{{ chit.party_name }}</strong>
+                        </div>
+                        <div class="text-muted small">{{ chit.upload_date|date:"d M, H:i" }} &bull; {{ chit.items_count|default:chit.items.all|length }} items</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fw-bold font-monospace fs-6">Rs {{ chit.total_amount|floatformat:2 }}</div>
+                        {% if chit.pending_credit_amount > 0 %}
+                            <span class="khata-badge khata-badge-terracotta">Udhar: Rs {{ chit.pending_credit_amount|floatformat:2 }}</span>
+                        {% else %}
+                            <span class="khata-badge khata-badge-mint">Settled</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <a href="{% url 'chit_detail' chit.id %}" class="btn btn-sm btn-khata-secondary w-100 mt-1">
+                    View Chit Details
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% else %}
+        <div class="p-5 text-center text-muted">
+            <svg class="mb-3 text-muted" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <h6 class="fw-bold text-dark">No chits {% if period != "all" %}in this period{% else %}uploaded yet{% endif %}</h6>
+            <p class="small mb-3 font-editorial">Upload your handwritten receipt photos to digitize them with OCR.</p>
+            <a href="{% url 'chit_upload' %}" class="btn btn-sm btn-khata-terracotta">
+                + Scan your first chit
+            </a>
+        </div>
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    (function () {
+        const skeleton = document.getElementById('skeleton-dashboard');
+        const content = document.getElementById('dashboard-actual-content');
+
+        function showSkeleton() {
+            if (content && skeleton) {
+                content.style.opacity = '0';
+                setTimeout(() => {
+                    content.style.display = 'none';
+                    content.setAttribute('aria-hidden', 'true');
+                    content.setAttribute('aria-busy', 'true');
+                    skeleton.style.display = 'block';
+                    skeleton.style.opacity = '1';
+                    skeleton.setAttribute('aria-hidden', 'false');
+                    skeleton.setAttribute('aria-busy', 'true');
+                }, 50);
+            }
+        }
+
+        function hideSkeleton() {
+            if (content && skeleton) {
+                skeleton.style.opacity = '0';
+                setTimeout(() => {
+                    skeleton.style.display = 'none';
+                    skeleton.setAttribute('aria-hidden', 'true');
+                    skeleton.setAttribute('aria-busy', 'false');
+                    content.style.display = 'block';
+                    content.setAttribute('aria-hidden', 'false');
+                    content.setAttribute('aria-busy', 'false');
+                    requestAnimationFrame(() => {
+                        content.style.opacity = '1';
+                    });
+                }, 120);
+            }
+        }
+
+        // Global dashboard controller for state management & AJAX integrations
+        window.KhataDashboard = {
+            showSkeleton: showSkeleton,
+            hideSkeleton: hideSkeleton
+        };
+
+        // Attach loading transition to period filter buttons during time-range switches
+        document.querySelectorAll('.khata-period-pill').forEach(function (pill) {
+            pill.addEventListener('click', function (e) {
+                if (!this.classList.contains('active')) {
+                    showSkeleton();
+                }
+            });
+        });
+
+        // Initialize state swap seamlessly
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', hideSkeleton);
+        } else {
+            hideSkeleton();
+        }
+    })();
+</script>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Sign In — Khata Digitizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 py-md-5">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-5">
+        <div class="khata-card float-elevated p-4 p-sm-5">
+            <!-- Brand Mark & Welcome Title -->
+            <div class="text-center mb-4">
+                <div class="khata-brand-icon mx-auto mb-3" style="width: 48px; height: 48px; border-radius: var(--radius-md);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10"/>
+                        <path d="M6 10h10"/>
+                        <path d="M6 14h6"/>
+                    </svg>
+                </div>
+                <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.03em;">
+                    Sign in to your ledger
+                </h1>
+                <p class="font-editorial text-muted small mb-0" style="font-size: 0.95rem;">
+                    Access store balance, digitized receipt chits, and customer credit
+                </p>
+            </div>
+
+            <!-- Form -->
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small mb-3 border-0" style="background-color: var(--terracotta-bg); color: var(--terracotta-text); border-left: 3px solid var(--terracotta) !important;">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Username or Mobile -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1" for="{{ form.username.id_for_label }}">
+                        {{ form.username.label }}
+                    </label>
+                    {{ form.username }}
+                    {% for error in form.username.errors %}
+                        <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <!-- Password with Visibility Toggle -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1" for="{{ form.password.id_for_label }}">
+                        {{ form.password.label }}
+                    </label>
+                    <div class="password-input-wrapper">
+                        {{ form.password }}
+                        <button type="button"
+                                class="password-toggle-btn"
+                                id="togglePasswordBtn"
+                                tabindex="0"
+                                aria-label="Toggle password visibility"
+                                aria-pressed="false"
+                                title="Show password">
+                            <!-- Eye Icon (Default / Masked) -->
+                            <svg class="password-icon eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <!-- Eye-Slash Icon (Active / Revealed) -->
+                            <svg class="password-icon eye-slash-icon d-none" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/>
+                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/>
+                                <path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/>
+                                <line x1="2" y1="2" x2="22" y2="22"/>
+                            </svg>
+                        </button>
+                    </div>
+                    {% for error in form.password.errors %}
+                        <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <button type="submit" class="btn btn-khata-primary w-100 py-2 fs-6 mt-3">
+                    Sign In to Store
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                <p class="small text-muted mb-0 font-editorial" style="font-size: 0.9rem;">
+                    New shop? <a href="{% url 'register' %}" class="fw-semibold text-decoration-none" style="color: var(--terracotta);">Register store account</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggleBtn = document.getElementById('togglePasswordBtn');
+    if (!toggleBtn) return;
+
+    const wrapper = toggleBtn.closest('.password-input-wrapper');
+    const passwordInput = wrapper ? wrapper.querySelector('input') : null;
+    const eyeIcon = toggleBtn.querySelector('.eye-icon');
+    const eyeSlashIcon = toggleBtn.querySelector('.eye-slash-icon');
+
+    if (passwordInput) {
+        toggleBtn.addEventListener('click', function () {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+
+            if (isPassword) {
+                passwordInput.setAttribute('type', 'text');
+                toggleBtn.setAttribute('aria-pressed', 'true');
+                toggleBtn.setAttribute('aria-label', 'Hide password');
+                toggleBtn.setAttribute('title', 'Hide password');
+                if (eyeIcon) eyeIcon.classList.add('d-none');
+                if (eyeSlashIcon) eyeSlashIcon.classList.remove('d-none');
+            } else {
+                passwordInput.setAttribute('type', 'password');
+                toggleBtn.setAttribute('aria-pressed', 'false');
+                toggleBtn.setAttribute('aria-label', 'Show password');
+                toggleBtn.setAttribute('title', 'Show password');
+                if (eyeIcon) eyeIcon.classList.remove('d-none');
+                if (eyeSlashIcon) eyeSlashIcon.classList.add('d-none');
+            }
+            passwordInput.focus();
+        });
+    }
+});
+</script>
+{% endblock %}

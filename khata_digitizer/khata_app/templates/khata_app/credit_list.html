@@ -1,0 +1,342 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Udhar Ledger — Khata Digitizer{% endblock %}
+
+{% block content %}
+<!-- Top Header & Controls -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+    <div>
+        <div class="khata-breadcrumb">
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <span class="separator">/</span>
+            <span>Credit Ledger</span>
+        </div>
+        <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.03em;">
+            Customer Credit Ledger (Udhar)
+        </h1>
+        <p class="font-editorial text-muted mb-0 small" style="font-size: 0.95rem;">
+            Track customer receivables, overdue balances, and reconcile payments with instant ledger updates.
+        </p>
+    </div>
+    <div class="d-flex align-items-center gap-2 w-100 w-md-auto">
+        <a href="{% url 'chit_upload' %}" class="btn btn-khata-terracotta flex-fill flex-md-initial">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Scan New Chit</span>
+        </a>
+    </div>
+</div>
+
+<!-- Ledger Summary Bento Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-4">
+        <div class="khata-stat-card stat-terracotta">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--terracotta-text);">Outstanding Udhar</div>
+                <div class="khata-stat-icon" style="background: var(--terracotta-bg); color: var(--terracotta);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num" style="color: var(--terracotta);">
+                Rs {{ pending_credit_amount|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext font-monospace" style="color: var(--terracotta);">
+                {{ pending_count }} pending item(s) to collect
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="khata-stat-card stat-mint">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--mint-text);">Settled Credit (Collected)</div>
+                <div class="khata-stat-icon" style="background: var(--mint-bg); color: var(--mint-text);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num" style="color: var(--mint-text);">
+                Rs {{ settled_credit_amount|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext font-editorial" style="color: var(--mint-text);">
+                Successfully received &amp; closed
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 col-md-4">
+        <div class="khata-stat-card stat-slate">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="khata-stat-label" style="color: var(--slate-violet-text);">Total Credit Extended</div>
+                <div class="khata-stat-icon" style="background: var(--slate-violet-bg); color: var(--slate-violet);">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="khata-stat-value mt-2 currency-num">
+                Rs {{ total_credit_amount|floatformat:2 }}
+            </div>
+            <div class="khata-stat-subtext font-editorial">
+                Combined lifetime credit ledger
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters & Search Toolbar -->
+<div class="khata-card float-elevated mb-4">
+    <div class="p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-12 col-md-auto">
+                <div class="khata-period-group w-100 justify-content-between">
+                    <a href="?status=pending{% if customer_id %}&customer={{ customer_id }}{% endif %}"
+                       class="khata-period-pill flex-fill text-center {% if status_filter == 'pending' %}active{% endif %}">
+                        Pending Only
+                    </a>
+                    <a href="?status=paid{% if customer_id %}&customer={{ customer_id }}{% endif %}"
+                       class="khata-period-pill flex-fill text-center {% if status_filter == 'paid' %}active{% endif %}">
+                        Settled (Paid)
+                    </a>
+                    <a href="?status=all{% if customer_id %}&customer={{ customer_id }}{% endif %}"
+                       class="khata-period-pill flex-fill text-center {% if status_filter == 'all' %}active{% endif %}">
+                        All Credit
+                    </a>
+                </div>
+            </div>
+
+            {% if customers %}
+            <div class="col-12 col-md-auto ms-md-auto d-flex align-items-center gap-2">
+                <label for="customerSelect" class="small fw-semibold text-muted mb-0 text-nowrap font-editorial">Filter Customer:</label>
+                <select id="customerSelect" name="customer" class="form-select form-select-sm" onchange="this.form.submit()">
+                    <option value="">All Customers</option>
+                    {% for cust in customers %}
+                        <option value="{{ cust.id }}" {% if customer_id == cust.id|stringformat:'s' %}selected{% endif %}>
+                            {{ cust.name }} {% if cust.phone %}({{ cust.phone }}){% endif %}
+                        </option>
+                    {% endfor %}
+                </select>
+                <input type="hidden" name="status" value="{{ status_filter }}">
+            </div>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<!-- Credit Products Table / Cards -->
+<div class="khata-card float-elevated">
+    <div class="khata-card-header">
+        <h5 class="mb-0 fw-bold fs-6 text-dark" style="letter-spacing: -0.01em;">
+            Credit Items Breakdown
+        </h5>
+        <span class="text-muted small font-monospace">{{ total_items_count|default:items|length }} item(s) logged</span>
+    </div>
+
+    {% if items %}
+        <!-- Desktop Table View -->
+        <div class="d-none d-md-block table-responsive">
+            <table class="khata-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Party</th>
+                        <th>Product / Item</th>
+                        <th class="text-center">Qty</th>
+                        <th class="text-end">Unit Price</th>
+                        <th class="text-end">Total Amount</th>
+                        <th class="text-center">Status</th>
+                        <th class="text-center">Action</th>
+                        <th class="text-center">Chit</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr class="{% if item.is_paid %}bg-light text-muted{% endif %}">
+                        <td class="text-muted small font-editorial">
+                            {{ item.chit.upload_date|date:"d M Y, H:i" }}
+                        </td>
+                        <td>
+                            <div class="fw-bold {% if not item.is_paid %}text-dark{% endif %}">
+                                {{ item.chit.party_name }}
+                            </div>
+                            <div class="d-flex align-items-center gap-1 mt-1">
+                                {% if item.chit.chit_type == 'seller' %}
+                                    <span class="khata-badge khata-badge-blue" style="font-size: 0.65rem;">🏢 Supplier</span>
+                                {% else %}
+                                    <span class="khata-badge khata-badge-slate" style="font-size: 0.65rem;">👤 Customer</span>
+                                {% endif %}
+                                {% if item.chit.party_phone %}
+                                    <a href="tel:{{ item.chit.party_phone }}" class="text-muted small text-decoration-none">
+                                        {{ item.chit.party_phone }}
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="fw-semibold {% if not item.is_paid %}text-dark{% endif %}">{{ item.item_name }}</span>
+                        </td>
+                        <td class="text-center font-monospace">{{ item.quantity|floatformat:"-2" }}</td>
+                        <td class="text-end text-muted font-monospace">Rs {{ item.price|floatformat:2 }}</td>
+                        <td class="text-end fw-bold font-monospace" {% if item.is_paid %}style="color: var(--mint-text);"{% else %}style="color: var(--terracotta);"{% endif %}>
+                            Rs {{ item.line_total|floatformat:2 }}
+                        </td>
+                        <td class="text-center">
+                            {% if item.is_paid %}
+                                <span class="khata-badge khata-badge-mint">
+                                    ✓ Settled {% if item.paid_at %}({{ item.paid_at|date:"d M" }}){% endif %}
+                                </span>
+                            {% else %}
+                                <span class="khata-badge khata-badge-terracotta">Pending Udhar</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            <form method="post" action="{% url 'item_toggle_paid' item.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                {% if item.is_paid %}
+                                    <button type="submit" class="btn btn-sm btn-khata-secondary py-1 px-2" title="Mark as Unpaid again">
+                                        ↺ Revert
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn btn-sm btn-khata-success py-1 px-3">
+                                        ✓ Mark Paid
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                        <td class="text-center">
+                            <a href="{% url 'chit_detail' item.chit.id %}" class="btn btn-sm btn-khata-secondary py-1 px-2">
+                                View Chit
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div class="d-md-none p-3">
+            {% for item in items %}
+            <div class="mobile-ledger-card {% if item.is_paid %}paid{% else %}pending{% endif %}">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <div class="fw-bold fs-6 text-dark">{{ item.chit.party_name }}</div>
+                        <div class="d-flex align-items-center gap-1 mt-1">
+                            {% if item.chit.chit_type == 'seller' %}
+                                <span class="khata-badge khata-badge-blue" style="font-size: 0.65rem;">🏢 Supplier</span>
+                            {% else %}
+                                <span class="khata-badge khata-badge-slate" style="font-size: 0.65rem;">👤 Customer</span>
+                            {% endif %}
+                            {% if item.chit.party_phone %}
+                                <a href="tel:{{ item.chit.party_phone }}" class="text-muted small text-decoration-none">
+                                    {{ item.chit.party_phone }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="fs-5 fw-bold font-monospace" {% if item.is_paid %}style="color: var(--mint-text);"{% else %}style="color: var(--terracotta);"{% endif %}>
+                            Rs {{ item.line_total|floatformat:2 }}
+                        </div>
+                        {% if item.is_paid %}
+                            <span class="khata-badge khata-badge-mint">Paid</span>
+                        {% else %}
+                            <span class="khata-badge khata-badge-terracotta">Pending</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center py-2 border-top border-bottom my-2 small text-muted">
+                    <div>
+                        <strong class="text-dark">{{ item.item_name }}</strong>
+                        <span>({{ item.quantity|floatformat:"-2" }} &times; Rs {{ item.price|floatformat:2 }})</span>
+                    </div>
+                    <a href="{% url 'chit_detail' item.chit.id %}" class="text-decoration-none text-muted font-editorial">
+                        {{ item.chit.upload_date|date:"d M" }} &bull; View Chit
+                    </a>
+                </div>
+
+                <form method="post" action="{% url 'item_toggle_paid' item.id %}" class="mt-2">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    {% if item.is_paid %}
+                        <button type="submit" class="btn btn-sm btn-khata-secondary w-100 py-2">
+                            ↺ Revert to Pending
+                        </button>
+                    {% else %}
+                        <button type="submit" class="btn btn-khata-success w-100 py-2">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Mark as Paid (Receive Cash)
+                        </button>
+                    {% endif %}
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination Controls -->
+        {% if page_obj.has_other_pages %}
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center p-3 border-top gap-2" style="background-color: var(--bg-subtle); border-color: var(--border-default) !important;">
+            <div class="small text-muted font-editorial">
+                Showing page <strong>{{ page_obj.number }}</strong> of <strong>{{ page_obj.paginator.num_pages }}</strong> ({{ total_items_count }} total entries)
+            </div>
+            <nav aria-label="Credit ledger pagination">
+                <ul class="pagination pagination-sm mb-0">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}{% if customer_id %}&customer={{ customer_id }}{% endif %}" aria-label="Previous">
+                                &laquo; Prev
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li class="page-item active" aria-current="page"><span class="page-link" style="background-color: var(--dark-base); border-color: var(--dark-base);">{{ num }}</span></li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}&status={{ status_filter }}{% if customer_id %}&customer={{ customer_id }}{% endif %}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}{% if customer_id %}&customer={{ customer_id }}{% endif %}" aria-label="Next">
+                                Next &raquo;
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+    {% else %}
+        <div class="p-5 text-center text-muted">
+            <svg class="mb-3 text-muted" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <h6 class="fw-bold text-dark">No credit items match your filter</h6>
+            <p class="small mb-0 font-editorial">Items marked as "Credit" during chit review appear here in your Khata.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

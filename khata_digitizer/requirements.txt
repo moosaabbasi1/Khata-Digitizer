@@ -1,0 +1,13 @@
+Django==6.1.1
+mssql-django==1.8.0
+pyodbc==5.3.0
+python-decouple==3.8
+
+# Phase 4: OCR pipeline
+opencv-python-headless==4.13.0.92
+pytesseract==0.3.13
+numpy==2.4.4
+
+# Phase 5: required by Django's ImageField for image validation
+pillow==12.1.1
+Pillow==12.1.1

@@ -1,0 +1,75 @@
+{% extends "khata_app/base.html" %}
+
+{% block title %}Register Store — Khata Digitizer{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4 py-md-5">
+    <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+        <div class="khata-card float-elevated p-4 p-sm-5">
+            <!-- Brand Mark & Title -->
+            <div class="text-center mb-4">
+                <div class="khata-brand-icon mx-auto mb-3" style="width: 48px; height: 48px; border-radius: var(--radius-md);">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                        <path d="M6 6h10"/>
+                        <path d="M6 10h10"/>
+                        <path d="M6 14h6"/>
+                    </svg>
+                </div>
+                <h1 class="h3 fw-bold mb-1" style="letter-spacing: -0.03em;">
+                    Register Your Store
+                </h1>
+                <p class="font-editorial text-muted small mb-0" style="font-size: 0.95rem;">
+                    Instant OCR chit digitization and customer credit bookkeeping
+                </p>
+            </div>
+
+            <!-- Mobile notice pill -->
+            <div class="p-3 rounded mb-4 d-flex align-items-center gap-2" style="background-color: var(--atm-blue-bg); border: 1px solid var(--atm-blue-border); color: var(--atm-blue-text);">
+                <span class="fs-5">📱</span>
+                <div class="small">
+                    <strong>Pakistani Mobile Identity:</strong> Use an active 11-digit mobile number (e.g. <code>03001234567</code> or <code>0321-1234567</code>) as your primary store identifier.
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger py-2 small mb-3 border-0" style="background-color: var(--terracotta-bg); color: var(--terracotta-text); border-left: 3px solid var(--terracotta) !important;">
+                        {% for error in form.non_field_errors %}
+                            <div>{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% for field in form %}
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-dark mb-1" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <div class="form-text small text-muted font-editorial">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="small mt-1" style="color: var(--terracotta);">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button type="submit" class="btn btn-khata-primary w-100 py-2 fs-6 mt-3">
+                    Create Store Account
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top" style="border-color: var(--border-subtle) !important;">
+                <p class="small text-muted mb-0 font-editorial" style="font-size: 0.9rem;">
+                    Already registered? <a href="{% url 'login' %}" class="fw-semibold text-decoration-none" style="color: var(--terracotta);">Sign in to existing store</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
